@@ -1,0 +1,5 @@
+# Ignore the MacOS tracking files
+.DS_Store
+.classpath
+.project
+.settings
