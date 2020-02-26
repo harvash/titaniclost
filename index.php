@@ -21,7 +21,11 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-
+	  	<script src="https://cdn.anychart.com/releases/8.7.1/js/anychart-core.min.js"></script>
+		<script src="https://cdn.anychart.com/releases/8.7.1/js/anychart-bundle.min.js"></script>
+		<script src="https://cdn.anychart.com/releases/8.7.1/js/anychart-base.min.js"></script>
+	<!-- Include the data adapter -->
+		<script src="https://cdn.anychart.com/releases/8.7.1/js/anychart-data-adapter.min.js"></script>
 		
 </head>
 
@@ -122,7 +126,69 @@
             </article>
 
             <article class="col-md-4 article-intro">
-                
+            <?php
+            function requireToVar($file){
+                ob_start();
+                require($file);
+                return ob_get_clean();
+            }
+            $jstring=requireToVar('surviveAgeGenderSQL.php');
+            ?>
+            <div id="container">
+
+            <script>
+            anychart.onDocumentReady(function () {
+
+            	// data "surviveAgeGenderSQL.php")
+            	var phpdata = <?php echo $jstring ?>;
+            	data = anychart.data.set(phpdata); 
+
+            	// remapping data
+            	var males = data.mapAs({x: "Age_Range", value: "Males"});
+                var females = data.mapAs({x: "Age_Range", value: "Females"});
+
+            	// create a chart
+            	var chart = anychart.cartesian();
+            	//chart.height = "400px";
+            	//chart.width = "550px";
+
+            	// set default series type
+            	chart.defaultSeriesType("column");
+
+
+                // create variable for series
+                var series;
+                // create male series
+                series = chart.column(males);
+                // set id for the male series
+                series.id("males");
+              	series.name("males");
+              	series.color("blue");
+              
+                // create female series
+                series = chart.column(females);
+                // set id for female series
+                series.id("females");
+            	series.name("females");
+                series.color("pink");
+
+            	// enable legend
+            	chart.legend(true);
+
+            	// set axes titles
+            	var xAxis = chart.xAxis();
+            	xAxis.title("Age Range");
+            	var yAxis = chart.yAxis();
+            	yAxis.title("# of survivors");
+
+            	var stage = anychart.graphics.create("container", 400, 300);
+            	chart.container(stage).draw();
+            	// draw chart
+            	//chart.container("container");
+            	//chart.draw();
+            });
+            </script>
+  			</div>
                 <h3>
                     <a href="#">Survival by Age & Gender</a>
                 </h3>
@@ -181,11 +247,7 @@
 	<!-- Placeholder Images -->
 	<script src="js/holder.min.js"></script>
 	
-	<!--  jqWidgets files -->
-		<script type="text/javascript" src="scripts/jquery-1.11.1.min.js"></script>
-		<script type="text/javascript" src="jqwidgets/jqxcore.js"></script>
-		<script type="text/javascript" src="jqwidgets/jqxchart.js"></script>  
-		<script type="text/javascript" src="jqwidgets/jqxdata.js"></script>
+
 	
 </body>
 

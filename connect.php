@@ -3,5 +3,5 @@
 $hostname = "localhost";
 $database = "titanic";
 $username = "root";
-$password = "Warrrant01";
+$password = "root";
 ?>
