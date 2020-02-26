@@ -1,6 +1,6 @@
 <?php
 # FileName="connect.php"
-$hostname = "localhost";
+$hostname = "titanicdb01.mysql.database.azure.com ";
 $database = "titanic";
 $username = "root";
 $password = "root";
