@@ -1,15 +1,6 @@
 <?php
-#Include the connect.php file
 include('connect.php');
-//  	$connect = mysqli_init();
-//  	if (!$connect) {
-//  	    die("mysqli_init failed");
-//  	}
- 	
-//  	// Specify connection timeout
-//  	mysqli_options($connect, MYSQLI_OPT_CONNECT_TIMEOUT, 10);
- 	
-//  	mysqli_real_connect($connect,$hostname,$username,$password,$database);
+
 	
     	$query = "SELECT * FROM (
                     SELECT CASE

@@ -62,9 +62,9 @@
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Lists<span class="caret"></span></a>
 						<ul class="dropdown-menu" aria-labelledby="about-us">
-							<li><a href="#">Engage</a></li>
-							<li><a href="#">Pontificate</a></li>
-							<li><a href="#">Synergize</a></li>
+							<li><a href="#">page1</a></li>
+							<li><a href="#">page2</a></li>
+							<li><a href="#">page3</a></li>
 						</ul>
 					</li>
                 </ul>
@@ -99,13 +99,23 @@
             <div class="col-lg-12">
                 <h1 class="page-header">Survival Statistics
                 </h1>
-                <p>Proactively envisioned multimedia based expertise and cross-media growth strategies. Seamlessly visualize quality intellectual capital without superior collaboration and idea-sharing. Holistically pontificate installed base portals after maintainable products.</p>
+                <p>The Titanic disaster is well known to many, here are some interesting facts.</p>
             </div>
         </div>
         <!-- /.row -->
 
         <!-- Feature Row -->
         <div class="row">
+        <?php
+            function requireToVar($file){
+                ob_start();
+                require($file);
+                return ob_get_clean();
+            }
+            $jstring=requireToVar('surviveAgeGenderSQL.php');
+            $byclass=requireToVar('survivalByClass.php')
+            ?>
+          
             <article class="col-md-4 article-intro">
                 <a href="#">
                     <img class="img-responsive img-rounded" src="js/holder.js/700x300" alt="">                    
@@ -113,28 +123,35 @@
                 <h3>
                     <a href="#">Casuality Statistics</a>
                 </h3>
-                <p>Collaboratively administrate empowered markets via plug-and-play networks. Dynamically procrastinate B2C users after installed base benefits. Dramatically visualize customer directed convergence without revolutionary ROI.</p>
+                <p>Frightening to think that money may have caused many to, er....sink or swim?</p>
             </article>
             <article class="col-md-4 article-intro">
-                <a href="#">
-                    <img class="img-responsive img-rounded" src="js/holder.js/700x300" alt="">
-                </a>
+           <div id="container">
+           <script>
+            		anychart.onDocumentReady(function () {
+            		var byclass = <?php echo $byclass ?>;
+        			 // mappings
+        		    var dataSet = anychart.data.set(byclass);
+        		    var pclass = dataSet.mapAs({x:"pclass", value:"survivors"});
+        		    var chart = anychart.pie(pclass);
+        		    chart.innerRadius('60%');
+        		    // set chart title text settings
+        		    chart.title("Percentage of Surviors by Passenger Class");
+        		    chart.container("container");
+        		    chart.draw();
+            		});
+              </script></div>
                 <h3>
                     <a href="#">Survival by Class</a>
                 </h3>
-                <p>Dramatically maintain clicks-and-mortar solutions without functional solutions. Efficiently unleash cross-media information without cross-media value. Quickly maximize timely deliverables for real-time schemas.</p>
+                <p>
+					The upper crust will prevail against any odds!
+                </p>
             </article>
 
             <article class="col-md-4 article-intro">
-            <?php
-            function requireToVar($file){
-                ob_start();
-                require($file);
-                return ob_get_clean();
-            }
-            $jstring=requireToVar('surviveAgeGenderSQL.php');
-            ?>
-            <div id="container">
+
+            <div id="container1">
 
             <script>
             anychart.onDocumentReady(function () {
@@ -181,7 +198,7 @@
             	var yAxis = chart.yAxis();
             	yAxis.title("# of survivors");
 
-            	var stage = anychart.graphics.create("container");
+            	var stage = anychart.graphics.create("container1");
             	chart.container(stage).draw();
             	// draw chart
             	//chart.container("container");
@@ -193,14 +210,16 @@
                     <a href="#">Survival by Age & Gender</a>
                 </h3>
                 
-                <p>Professionally cultivate one-to-one customer service with robust ideas. Completely synergize resource taxing relationships via premier niche markets. Dynamically innovate resource-leveling customer service for state of the art customer service.</p>
+                <p>
+                   In early 1900's, it was still a man's world!
+                </p>
             </article>
         </div>
         <!-- /.row -->
 
     </div>
     <!-- /.container -->
-	
+	<!--  dropped for a later day...
 	<footer>
 		<div class="footer-blurb">
 			<div class="container">
@@ -225,7 +244,7 @@
 				<!-- /.row -->	
 			</div>
         </div>
-        
+        -->
         <div class="small-print">
         	<div class="container">
         		<p><a href="#">Terms &amp; Conditions</a> | <a href="#">Privacy Policy</a> | <a href="#">Contact</a></p>
