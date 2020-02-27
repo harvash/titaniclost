@@ -1,12 +1,23 @@
 <?php
 	#Include the connect.php file
-	include('connect.php');
-	// Create connection
-	$connect = new mysqli($hostname, $username, $password, $database);
-	// Check connection
-	if ($connect->connect_error) {
-	    die("Connection failed: " . $connect->connect_error);
-	}
+ 	include('connect.php');
+ 	// Create connection
+ 	$connect = new mysqli($hostname, $username, $password, $database);
+ 	mysqli_options($connect, MYSQLI_OPT_CONNECT_TIMEOUT, 10);
+ 	
+ 	// Check connection
+ 	if ($connect->connect_error) {
+ 	    die("Connection failed: " . $connect->connect_error);
+ 	}
+//  	$connect = mysqli_init();
+//  	if (!$connect) {
+//  	    die("mysqli_init failed");
+//  	}
+ 	
+//  	// Specify connection timeout
+//  	mysqli_options($connect, MYSQLI_OPT_CONNECT_TIMEOUT, 10);
+ 	
+//  	mysqli_real_connect($connect,$hostname,$username,$password,$database);
 	
     	$query = "SELECT * FROM (
                     SELECT CASE

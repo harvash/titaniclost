@@ -181,7 +181,7 @@
             	var yAxis = chart.yAxis();
             	yAxis.title("# of survivors");
 
-            	var stage = anychart.graphics.create("container", 400, 300);
+            	var stage = anychart.graphics.create("container");
             	chart.container(stage).draw();
             	// draw chart
             	//chart.container("container");
