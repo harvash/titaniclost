@@ -1,0 +1,6 @@
+driver: org.postgresql.Driver
+classpath: postgresql-42.2.10.jar
+url: jdbc:postgresql://localhost:5432/titanicdb
+username: postgres
+password: changeme
+changeLogFile: changelogs/postgres/changelog-01.yml
