@@ -4,6 +4,6 @@
 .project
 .settings
 connect.php
-./pgdb/data/*
-./pgdb/logs/*
-./assets/pgadmin/data/*
+/pgdb/data/
+/pgdb/logs/
+/assets/pgadmin/data/
