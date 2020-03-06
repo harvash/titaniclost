@@ -6,3 +6,4 @@
 connect.php
 ./pgdb/data
 ./pgdb/logs
+./assets/pgadmin/data
