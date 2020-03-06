@@ -1,0 +1,57 @@
+databaseChangeLog:
+  - preConditions:
+    - runningAs:
+        username: postgres
+      
+  - changeSet:
+      id: create_table_titanic3
+      context: base
+      author: cxa791
+      changes:
+        - createTable:
+            tableName: titanic3
+            schemaName: titanic
+            columns:
+              - column:
+                  name: plcass
+                  type: smallint
+              - column:
+                  name: survived
+                  type: smallint
+              - column:
+                  name: name
+                  type: varchar(100)
+              - column:
+                  name: sex
+                  type: varchar(10)
+              - column:
+                  name: age
+                  type: numeric(7,4)
+              - column:
+                  name: sibsp
+                  type: smallint
+              - column:
+                  name: parch
+                  type: smallint
+              - column: 
+                  name: ticket
+                  type: varchar(50)
+              - column:
+                  name: fare
+                  type: numeric(10,3)
+              - column:
+                  name: cabin
+                  type: varchar(50)
+              - column: 
+                  name: embarked
+                  type: varchar(4)
+              - column:
+                  name: boat
+                  type: varchar(10)
+              - column:
+                  name: body
+                  type: smallint
+              - column:
+                  name: destination
+                  type: varchar(100)
+      

@@ -1,0 +1,14 @@
+2020-03-06 22:36:32.421 UTC [49] LOG:  database system was shut down at 2020-03-06 22:36:30 UTC
+2020-03-06 22:36:32.444 UTC [47] LOG:  database system is ready to accept connections
+2020-03-06 22:36:32.553 UTC [47] LOG:  received fast shutdown request
+2020-03-06 22:36:32.556 UTC [47] LOG:  aborting any active transactions
+2020-03-06 22:36:32.558 UTC [47] LOG:  background worker "logical replication launcher" (PID 55) exited with exit code 1
+2020-03-06 22:36:32.558 UTC [50] LOG:  shutting down
+2020-03-06 22:36:32.596 UTC [47] LOG:  database system is shut down
+2020-03-06 22:36:32.743 UTC [58] LOG:  database system was shut down at 2020-03-06 22:36:32 UTC
+2020-03-06 22:36:32.765 UTC [1] LOG:  database system is ready to accept connections
+2020-03-06 22:52:56.705 UTC [1] LOG:  received smart shutdown request
+2020-03-06 22:52:56.710 UTC [1] LOG:  background worker "logical replication launcher" (PID 64) exited with exit code 1
+2020-03-06 22:52:56.710 UTC [59] LOG:  shutting down
+2020-03-06 22:53:08.438 UTC [28] LOG:  database system was shut down at 2020-03-06 22:52:56 UTC
+2020-03-06 22:53:08.466 UTC [1] LOG:  database system is ready to accept connections
