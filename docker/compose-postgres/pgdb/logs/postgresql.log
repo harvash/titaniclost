@@ -1,0 +1,3130 @@
+2020-03-09 22:55:42.805 UTC [50] LOG:  database system was shut down at 2020-03-09 22:55:38 UTC
+2020-03-09 22:55:42.834 UTC [48] LOG:  database system is ready to accept connections
+2020-03-09 22:55:45.222 UTC [48] LOG:  received fast shutdown request
+2020-03-09 22:55:45.224 UTC [48] LOG:  aborting any active transactions
+2020-03-09 22:55:45.226 UTC [48] LOG:  background worker "logical replication launcher" (PID 56) exited with exit code 1
+2020-03-09 22:55:45.240 UTC [51] LOG:  shutting down
+2020-03-09 22:55:45.380 UTC [48] LOG:  database system is shut down
+2020-03-09 22:55:45.548 UTC [78] LOG:  database system was shut down at 2020-03-09 22:55:45 UTC
+2020-03-09 22:55:45.577 UTC [1] LOG:  database system is ready to accept connections
+2020-03-10 12:58:50.325 UTC [189] ERROR:  relation "public.databasechangeloglock" does not exist at character 22
+2020-03-10 12:58:50.325 UTC [189] STATEMENT:  SELECT COUNT(*) FROM public.databasechangeloglock
+2020-03-10 13:04:46.341 UTC [216] ERROR:  could not open file "/pgdb/scripts/titanic3_202002242013.csv.backup" for reading: No such file or directory
+2020-03-10 13:04:46.341 UTC [216] HINT:  COPY FROM instructs the PostgreSQL server process to read a file. You may want a client-side facility such as psql's \copy.
+2020-03-10 13:04:46.341 UTC [216] STATEMENT:  COPY titanic3
+	FROM '/pgdb/scripts/titanic3_202002242013.csv.backup' WITH DELIMITER ',' CSV HEADER;
+2020-03-10 13:26:19.748 UTC [293] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:26:19.748 UTC [293] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 13:26:19.748 UTC [293] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 13:26:20.247 UTC [310] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:26:20.247 UTC [310] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 13:26:20.247 UTC [310] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 13:26:20.247 UTC [309] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:26:20.247 UTC [309] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 13:26:20.247 UTC [309] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 13:26:20.310 UTC [312] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:26:20.310 UTC [312] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 13:26:20.310 UTC [312] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 13:26:20.412 UTC [321] ERROR:  relation "pg_qualstats_indexes_ddl" does not exist at character 335
+2020-03-10 13:26:20.412 UTC [321] STATEMENT:  
+	/* assumes the pg_qualstats extension and superuser or select grants on pg_qualstats_indexes_ddl view */
+	select
+	  'create_index'::text as tag_reco_topic,
+	  quote_ident(nspname::text)||'.'||quote_ident(relid::text) as tag_object_name,
+	  ddl as recommendation,
+	  ('qual execution count: '|| execution_count)::text as extra_info
+	from
+	  pg_qualstats_indexes_ddl
+	order by
+	  execution_count desc
+	limit 25;
+	
+2020-03-10 13:26:25.515 UTC [327] ERROR:  canceling statement due to statement timeout
+2020-03-10 13:26:25.515 UTC [327] STATEMENT:  
+	/* assumes the pg_qualstats extension */
+	select
+	  'drop_index'::text as tag_reco_topic,
+	  quote_ident(schemaname)||'.'||quote_ident(indexrelname) as tag_object_name,
+	  ('DROP INDEX ' || quote_ident(schemaname)||'.'||quote_ident(indexrelname) || ';')::text as recommendation,
+	  'NB! Make sure to also check replica pg_stat_user_indexes.idx_scan count if using them for queries'::text as extra_info
+	from
+	  pg_stat_user_indexes
+	  join
+	  pg_index using (indexrelid)
+	where
+	  idx_scan = 0
+	  and ((pg_relation_size(indexrelid)::numeric / (pg_database_size(current_database()))) > 0.005 /* 0.5% DB size threshold */
+	    or indisvalid)
+	  and not indisprimary
+	  and not indisreplident
+	;
+	
+2020-03-10 13:28:20.073 UTC [384] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:28:20.073 UTC [384] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 13:28:20.073 UTC [384] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 13:28:20.179 UTC [390] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:28:20.179 UTC [390] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 13:28:20.179 UTC [390] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 13:28:20.243 UTC [394] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:28:20.243 UTC [394] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 13:28:20.243 UTC [394] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 13:28:20.287 UTC [396] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:28:20.287 UTC [396] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 13:28:20.287 UTC [396] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 13:30:19.455 UTC [418] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:30:19.455 UTC [418] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 13:30:19.455 UTC [418] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 13:30:19.543 UTC [423] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:30:19.543 UTC [423] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 13:30:19.543 UTC [423] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 13:30:19.599 UTC [425] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:30:19.599 UTC [425] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 13:30:19.599 UTC [425] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 13:30:19.701 UTC [431] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:30:19.701 UTC [431] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 13:30:19.701 UTC [431] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 13:32:19.347 UTC [462] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:32:19.347 UTC [462] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 13:32:19.347 UTC [462] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 13:32:19.520 UTC [470] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:32:19.520 UTC [470] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 13:32:19.520 UTC [470] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 13:32:19.526 UTC [471] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:32:19.526 UTC [471] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 13:32:19.526 UTC [471] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 13:32:19.615 UTC [475] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:32:19.615 UTC [475] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 13:32:19.615 UTC [475] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 13:34:19.173 UTC [497] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:34:19.173 UTC [497] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 13:34:19.173 UTC [497] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 13:34:19.326 UTC [504] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:34:19.326 UTC [504] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 13:34:19.326 UTC [504] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 13:34:19.396 UTC [509] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:34:19.396 UTC [509] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 13:34:19.396 UTC [509] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 13:34:19.417 UTC [511] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:34:19.417 UTC [511] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 13:34:19.417 UTC [511] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 13:36:19.172 UTC [540] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:36:19.172 UTC [540] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 13:36:19.172 UTC [540] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 13:36:19.315 UTC [545] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:36:19.315 UTC [545] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 13:36:19.315 UTC [545] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 13:36:19.407 UTC [547] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:36:19.407 UTC [547] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 13:36:19.407 UTC [547] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 13:36:19.516 UTC [550] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:36:19.516 UTC [550] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 13:36:19.516 UTC [550] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 13:38:18.944 UTC [578] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:38:18.944 UTC [578] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 13:38:18.944 UTC [578] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 13:38:19.078 UTC [584] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:38:19.078 UTC [584] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 13:38:19.078 UTC [584] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 13:38:19.202 UTC [591] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:38:19.202 UTC [591] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 13:38:19.202 UTC [591] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 13:38:19.232 UTC [593] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:38:19.232 UTC [593] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 13:38:19.232 UTC [593] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 13:40:18.759 UTC [611] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:40:18.759 UTC [611] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 13:40:18.759 UTC [611] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 13:40:18.910 UTC [622] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:40:18.910 UTC [622] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 13:40:18.910 UTC [622] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 13:40:18.931 UTC [624] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:40:18.931 UTC [624] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 13:40:18.931 UTC [624] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 13:40:18.985 UTC [626] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:40:18.985 UTC [626] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 13:40:18.985 UTC [626] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 13:42:18.657 UTC [658] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:42:18.657 UTC [658] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 13:42:18.657 UTC [658] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 13:42:18.817 UTC [667] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:42:18.817 UTC [667] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 13:42:18.817 UTC [667] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 13:42:18.897 UTC [671] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:42:18.897 UTC [671] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 13:42:18.897 UTC [671] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 13:42:18.912 UTC [672] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:42:18.912 UTC [672] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 13:42:18.912 UTC [672] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 13:44:18.509 UTC [694] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:44:18.509 UTC [694] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 13:44:18.509 UTC [694] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 13:44:18.564 UTC [697] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:44:18.564 UTC [697] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 13:44:18.564 UTC [697] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 13:44:18.734 UTC [705] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:44:18.734 UTC [705] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 13:44:18.734 UTC [705] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 13:44:18.805 UTC [708] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:44:18.805 UTC [708] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 13:44:18.805 UTC [708] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 13:46:18.386 UTC [730] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:46:18.386 UTC [730] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 13:46:18.386 UTC [730] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 13:46:18.753 UTC [743] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:46:18.753 UTC [743] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 13:46:18.753 UTC [743] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 13:46:18.755 UTC [744] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:46:18.755 UTC [744] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 13:46:18.755 UTC [744] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 13:46:18.834 UTC [747] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:46:18.834 UTC [747] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 13:46:18.834 UTC [747] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 13:48:18.298 UTC [777] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:48:18.298 UTC [777] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 13:48:18.298 UTC [777] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 13:48:18.362 UTC [781] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:48:18.362 UTC [781] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 13:48:18.362 UTC [781] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 13:48:18.442 UTC [785] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:48:18.442 UTC [785] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 13:48:18.442 UTC [785] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 13:48:18.495 UTC [788] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:48:18.495 UTC [788] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 13:48:18.495 UTC [788] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 13:50:18.170 UTC [812] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:50:18.170 UTC [812] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 13:50:18.170 UTC [812] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 13:50:18.266 UTC [818] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:50:18.266 UTC [818] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 13:50:18.266 UTC [818] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 13:50:18.325 UTC [821] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:50:18.325 UTC [821] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 13:50:18.325 UTC [821] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 13:50:18.348 UTC [823] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:50:18.348 UTC [823] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 13:50:18.348 UTC [823] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 13:52:17.946 UTC [852] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:52:17.946 UTC [852] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 13:52:17.946 UTC [852] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 13:52:18.123 UTC [860] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:52:18.123 UTC [860] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 13:52:18.123 UTC [860] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 13:52:18.167 UTC [863] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:52:18.167 UTC [863] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 13:52:18.167 UTC [863] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 13:52:18.206 UTC [865] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:52:18.206 UTC [865] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 13:52:18.206 UTC [865] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 13:53:20.214 UTC [83] LOG:  stats_timestamp 2020-03-10 13:53:20.235755+00 is later than collector's time 2020-03-10 13:53:20.213397+00 for database 0
+2020-03-10 13:54:17.903 UTC [891] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:54:17.903 UTC [891] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 13:54:17.903 UTC [891] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 13:54:17.962 UTC [895] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:54:17.962 UTC [895] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 13:54:17.962 UTC [895] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 13:54:17.993 UTC [897] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:54:17.993 UTC [897] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 13:54:17.993 UTC [897] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 13:54:18.041 UTC [899] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:54:18.041 UTC [899] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 13:54:18.041 UTC [899] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 13:56:17.795 UTC [926] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:56:17.795 UTC [926] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 13:56:17.795 UTC [926] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 13:56:17.970 UTC [935] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:56:17.970 UTC [935] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 13:56:17.970 UTC [935] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 13:56:18.046 UTC [939] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:56:18.046 UTC [939] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 13:56:18.046 UTC [939] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 13:56:18.102 UTC [940] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:56:18.102 UTC [940] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 13:56:18.102 UTC [940] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 13:58:17.587 UTC [969] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:58:17.587 UTC [969] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 13:58:17.587 UTC [969] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 13:58:17.773 UTC [976] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:58:17.773 UTC [976] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 13:58:17.773 UTC [976] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 13:58:17.835 UTC [978] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:58:17.835 UTC [978] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 13:58:17.835 UTC [978] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 13:58:17.893 UTC [982] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 13:58:17.893 UTC [982] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 13:58:17.893 UTC [982] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 14:00:17.397 UTC [1004] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:00:17.397 UTC [1004] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 14:00:17.397 UTC [1004] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 14:00:17.504 UTC [1009] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:00:17.504 UTC [1009] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 14:00:17.504 UTC [1009] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 14:00:17.621 UTC [1017] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:00:17.621 UTC [1017] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 14:00:17.621 UTC [1017] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 14:00:17.667 UTC [1019] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:00:17.667 UTC [1019] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 14:00:17.667 UTC [1019] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 14:02:17.427 UTC [1056] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:02:17.427 UTC [1056] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 14:02:17.427 UTC [1056] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 14:02:17.428 UTC [1055] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:02:17.428 UTC [1055] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 14:02:17.428 UTC [1055] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 14:02:17.485 UTC [1057] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:02:17.485 UTC [1057] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 14:02:17.485 UTC [1057] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 14:02:17.507 UTC [1059] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:02:17.507 UTC [1059] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 14:02:17.507 UTC [1059] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 14:04:17.128 UTC [1081] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:04:17.128 UTC [1081] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 14:04:17.128 UTC [1081] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 14:04:17.345 UTC [1096] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:04:17.345 UTC [1096] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 14:04:17.345 UTC [1096] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 14:04:17.345 UTC [1097] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:04:17.345 UTC [1097] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 14:04:17.345 UTC [1097] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 14:04:17.401 UTC [1098] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:04:17.401 UTC [1098] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 14:04:17.401 UTC [1098] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 14:06:17.003 UTC [1120] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:06:17.003 UTC [1120] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 14:06:17.003 UTC [1120] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 14:06:17.064 UTC [1122] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:06:17.064 UTC [1122] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 14:06:17.064 UTC [1122] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 14:06:17.262 UTC [1129] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:06:17.262 UTC [1129] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 14:06:17.262 UTC [1129] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 14:06:17.462 UTC [1136] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:06:17.462 UTC [1136] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 14:06:17.462 UTC [1136] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 14:08:16.835 UTC [1160] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:08:16.835 UTC [1160] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 14:08:16.835 UTC [1160] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 14:08:17.043 UTC [1170] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:08:17.043 UTC [1170] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 14:08:17.043 UTC [1170] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 14:08:17.122 UTC [1173] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:08:17.122 UTC [1173] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 14:08:17.122 UTC [1173] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 14:08:17.204 UTC [1179] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:08:17.204 UTC [1179] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 14:08:17.204 UTC [1179] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 14:10:16.730 UTC [1199] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:10:16.730 UTC [1199] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 14:10:16.730 UTC [1199] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 14:10:16.844 UTC [1206] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:10:16.844 UTC [1206] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 14:10:16.844 UTC [1206] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 14:10:16.848 UTC [1207] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:10:16.848 UTC [1207] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 14:10:16.848 UTC [1207] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 14:10:16.967 UTC [1213] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:10:16.967 UTC [1213] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 14:10:16.967 UTC [1213] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 14:12:16.621 UTC [1245] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:12:16.621 UTC [1245] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 14:12:16.621 UTC [1245] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 14:12:16.728 UTC [1251] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:12:16.728 UTC [1251] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 14:12:16.728 UTC [1251] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 14:12:16.801 UTC [1255] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:12:16.801 UTC [1255] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 14:12:16.801 UTC [1255] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 14:12:16.858 UTC [1258] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:12:16.858 UTC [1258] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 14:12:16.858 UTC [1258] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 14:14:16.423 UTC [1276] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:14:16.423 UTC [1276] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 14:14:16.423 UTC [1276] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 14:14:16.567 UTC [1285] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:14:16.567 UTC [1285] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 14:14:16.567 UTC [1285] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 14:14:16.619 UTC [1288] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:14:16.619 UTC [1288] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 14:14:16.619 UTC [1288] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 14:14:16.649 UTC [1290] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:14:16.649 UTC [1290] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 14:14:16.649 UTC [1290] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 14:16:16.385 UTC [1320] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:16:16.385 UTC [1320] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 14:16:16.385 UTC [1320] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 14:16:16.587 UTC [1328] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:16:16.587 UTC [1328] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 14:16:16.587 UTC [1328] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 14:16:16.686 UTC [1330] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:16:16.686 UTC [1330] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 14:16:16.686 UTC [1330] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 14:16:16.743 UTC [1333] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:16:16.743 UTC [1333] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 14:16:16.743 UTC [1333] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 14:18:16.177 UTC [1360] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:18:16.177 UTC [1360] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 14:18:16.177 UTC [1360] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 14:18:16.322 UTC [1366] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:18:16.322 UTC [1366] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 14:18:16.322 UTC [1366] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 14:18:16.379 UTC [1370] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:18:16.379 UTC [1370] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 14:18:16.379 UTC [1370] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 14:18:16.409 UTC [1372] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:18:16.409 UTC [1372] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 14:18:16.409 UTC [1372] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 14:20:16.043 UTC [1396] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:20:16.043 UTC [1396] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 14:20:16.043 UTC [1396] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 14:20:16.060 UTC [1397] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:20:16.060 UTC [1397] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 14:20:16.060 UTC [1397] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 14:20:16.144 UTC [1400] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:20:16.144 UTC [1400] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 14:20:16.144 UTC [1400] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 14:20:16.249 UTC [1405] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:20:16.249 UTC [1405] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 14:20:16.249 UTC [1405] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 14:22:15.888 UTC [1438] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:22:15.888 UTC [1438] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 14:22:15.888 UTC [1438] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 14:22:16.049 UTC [1445] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:22:16.049 UTC [1445] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 14:22:16.049 UTC [1445] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 14:22:16.136 UTC [1451] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:22:16.136 UTC [1451] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 14:22:16.136 UTC [1451] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 14:22:16.154 UTC [1452] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:22:16.154 UTC [1452] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 14:22:16.154 UTC [1452] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 14:24:15.804 UTC [1476] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:24:15.804 UTC [1476] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 14:24:15.804 UTC [1476] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 14:24:15.958 UTC [1483] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:24:15.958 UTC [1483] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 14:24:15.958 UTC [1483] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 14:24:16.040 UTC [1487] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:24:16.040 UTC [1487] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 14:24:16.040 UTC [1487] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 14:24:16.069 UTC [1489] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:24:16.069 UTC [1489] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 14:24:16.069 UTC [1489] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 14:26:15.719 UTC [1513] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:26:15.719 UTC [1513] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 14:26:15.719 UTC [1513] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 14:26:15.738 UTC [1514] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:26:15.738 UTC [1514] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 14:26:15.738 UTC [1514] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 14:26:15.776 UTC [1515] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:26:15.776 UTC [1515] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 14:26:15.776 UTC [1515] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 14:26:16.099 UTC [1527] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:26:16.099 UTC [1527] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 14:26:16.099 UTC [1527] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 14:28:15.507 UTC [1555] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:28:15.507 UTC [1555] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 14:28:15.507 UTC [1555] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 14:28:15.620 UTC [1562] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:28:15.620 UTC [1562] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 14:28:15.620 UTC [1562] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 14:28:15.646 UTC [1563] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:28:15.646 UTC [1563] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 14:28:15.646 UTC [1563] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 14:28:15.737 UTC [1567] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:28:15.737 UTC [1567] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 14:28:15.737 UTC [1567] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 14:30:15.335 UTC [1592] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:30:15.335 UTC [1592] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 14:30:15.335 UTC [1592] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 14:30:15.471 UTC [1598] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:30:15.471 UTC [1598] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 14:30:15.471 UTC [1598] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 14:30:15.530 UTC [1601] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:30:15.530 UTC [1601] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 14:30:15.530 UTC [1601] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 14:30:15.593 UTC [1605] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:30:15.593 UTC [1605] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 14:30:15.593 UTC [1605] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 14:32:15.210 UTC [1634] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:32:15.210 UTC [1634] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 14:32:15.210 UTC [1634] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 14:32:15.313 UTC [1639] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:32:15.313 UTC [1639] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 14:32:15.313 UTC [1639] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 14:32:15.429 UTC [1646] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:32:15.429 UTC [1646] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 14:32:15.429 UTC [1646] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 14:32:15.434 UTC [1647] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:32:15.434 UTC [1647] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 14:32:15.434 UTC [1647] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 14:34:15.087 UTC [1671] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:34:15.087 UTC [1671] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 14:34:15.087 UTC [1671] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 14:34:15.167 UTC [1675] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:34:15.167 UTC [1675] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 14:34:15.167 UTC [1675] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 14:34:15.248 UTC [1680] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:34:15.248 UTC [1680] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 14:34:15.248 UTC [1680] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 14:34:15.296 UTC [1681] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:34:15.296 UTC [1681] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 14:34:15.296 UTC [1681] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 14:36:15.113 UTC [1714] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:36:15.113 UTC [1714] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 14:36:15.113 UTC [1714] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 14:36:15.192 UTC [1716] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:36:15.192 UTC [1716] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 14:36:15.192 UTC [1716] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 14:36:15.223 UTC [1718] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:36:15.223 UTC [1718] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 14:36:15.223 UTC [1718] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 14:36:15.339 UTC [1725] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:36:15.339 UTC [1725] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 14:36:15.339 UTC [1725] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 14:38:14.777 UTC [1747] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:38:14.777 UTC [1747] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 14:38:14.777 UTC [1747] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 14:38:14.873 UTC [1753] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:38:14.873 UTC [1753] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 14:38:14.873 UTC [1753] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 14:38:14.933 UTC [1755] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:38:14.933 UTC [1755] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 14:38:14.933 UTC [1755] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 14:38:15.057 UTC [1762] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:38:15.057 UTC [1762] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 14:38:15.057 UTC [1762] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 14:40:14.675 UTC [1787] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:40:14.675 UTC [1787] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 14:40:14.675 UTC [1787] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 14:40:14.775 UTC [1792] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:40:14.775 UTC [1792] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 14:40:14.775 UTC [1792] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 14:40:14.835 UTC [1794] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:40:14.835 UTC [1794] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 14:40:14.835 UTC [1794] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 14:40:14.874 UTC [1796] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:40:14.874 UTC [1796] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 14:40:14.874 UTC [1796] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 14:42:14.525 UTC [1829] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:42:14.525 UTC [1829] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 14:42:14.525 UTC [1829] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 14:42:14.692 UTC [1837] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:42:14.692 UTC [1837] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 14:42:14.692 UTC [1837] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 14:42:14.753 UTC [1839] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:42:14.753 UTC [1839] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 14:42:14.753 UTC [1839] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 14:42:14.793 UTC [1841] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:42:14.793 UTC [1841] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 14:42:14.793 UTC [1841] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 14:44:14.402 UTC [1864] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:44:14.402 UTC [1864] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 14:44:14.402 UTC [1864] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 14:44:14.586 UTC [1874] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:44:14.586 UTC [1874] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 14:44:14.586 UTC [1874] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 14:44:14.633 UTC [1876] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:44:14.633 UTC [1876] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 14:44:14.633 UTC [1876] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 14:44:14.642 UTC [1877] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:44:14.642 UTC [1877] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 14:44:14.642 UTC [1877] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 14:46:14.253 UTC [1899] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:46:14.253 UTC [1899] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 14:46:14.253 UTC [1899] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 14:46:14.649 UTC [1912] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:46:14.649 UTC [1912] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 14:46:14.649 UTC [1912] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 14:46:14.738 UTC [1916] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:46:14.738 UTC [1916] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 14:46:14.738 UTC [1916] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 14:46:14.770 UTC [1918] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:46:14.770 UTC [1918] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 14:46:14.770 UTC [1918] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 14:48:14.151 UTC [1950] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:48:14.151 UTC [1950] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 14:48:14.151 UTC [1950] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 14:48:14.174 UTC [1951] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:48:14.174 UTC [1951] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 14:48:14.174 UTC [1951] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 14:48:14.208 UTC [1952] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:48:14.208 UTC [1952] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 14:48:14.208 UTC [1952] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 14:48:14.324 UTC [1957] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:48:14.324 UTC [1957] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 14:48:14.324 UTC [1957] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 14:50:13.934 UTC [1979] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:50:13.934 UTC [1979] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 14:50:13.934 UTC [1979] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 14:50:14.120 UTC [1989] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:50:14.120 UTC [1989] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 14:50:14.120 UTC [1989] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 14:50:14.138 UTC [1990] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:50:14.138 UTC [1990] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 14:50:14.138 UTC [1990] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 14:50:14.230 UTC [1994] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:50:14.230 UTC [1994] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 14:50:14.230 UTC [1994] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 14:52:13.799 UTC [2022] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:52:13.799 UTC [2022] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 14:52:13.799 UTC [2022] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 14:52:13.944 UTC [2030] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:52:13.944 UTC [2030] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 14:52:13.944 UTC [2030] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 14:52:13.999 UTC [2031] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:52:13.999 UTC [2031] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 14:52:13.999 UTC [2031] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 14:52:14.062 UTC [2035] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:52:14.062 UTC [2035] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 14:52:14.062 UTC [2035] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 14:54:13.646 UTC [2058] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:54:13.646 UTC [2058] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 14:54:13.646 UTC [2058] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 14:54:13.665 UTC [2060] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:54:13.665 UTC [2060] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 14:54:13.665 UTC [2060] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 14:54:13.722 UTC [2063] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:54:13.722 UTC [2063] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 14:54:13.722 UTC [2063] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 14:54:13.829 UTC [2070] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:54:13.829 UTC [2070] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 14:54:13.829 UTC [2070] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 14:56:13.691 UTC [2100] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:56:13.691 UTC [2100] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 14:56:13.691 UTC [2100] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 14:56:13.830 UTC [2105] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:56:13.830 UTC [2105] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 14:56:13.830 UTC [2105] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 14:56:13.860 UTC [2107] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:56:13.860 UTC [2107] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 14:56:13.860 UTC [2107] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 14:56:13.940 UTC [2112] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:56:13.940 UTC [2112] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 14:56:13.940 UTC [2112] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 14:58:13.486 UTC [2143] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:58:13.486 UTC [2143] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 14:58:13.486 UTC [2143] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 14:58:13.562 UTC [2149] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:58:13.562 UTC [2149] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 14:58:13.562 UTC [2149] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 14:58:13.562 UTC [2150] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:58:13.562 UTC [2150] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 14:58:13.562 UTC [2150] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 14:58:13.640 UTC [2153] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 14:58:13.640 UTC [2153] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 14:58:13.640 UTC [2153] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 15:00:13.254 UTC [2176] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 15:00:13.254 UTC [2176] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 15:00:13.254 UTC [2176] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 15:00:13.468 UTC [2186] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 15:00:13.468 UTC [2186] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 15:00:13.468 UTC [2186] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 15:00:13.506 UTC [2187] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 15:00:13.506 UTC [2187] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 15:00:13.506 UTC [2187] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 15:00:13.545 UTC [2188] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 15:00:13.545 UTC [2188] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 15:00:13.545 UTC [2188] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 15:02:13.231 UTC [2223] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 15:02:13.231 UTC [2223] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 15:02:13.231 UTC [2223] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 15:02:13.284 UTC [2226] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 15:02:13.284 UTC [2226] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 15:02:13.284 UTC [2226] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 15:02:13.338 UTC [2230] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 15:02:13.338 UTC [2230] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 15:02:13.338 UTC [2230] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 15:02:13.338 UTC [2229] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 15:02:13.338 UTC [2229] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 15:02:13.338 UTC [2229] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 15:04:12.998 UTC [2256] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 15:04:12.998 UTC [2256] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 15:04:12.998 UTC [2256] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 15:04:13.174 UTC [2264] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 15:04:13.174 UTC [2264] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 15:04:13.174 UTC [2264] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 15:04:13.202 UTC [2265] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 15:04:13.202 UTC [2265] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 15:04:13.202 UTC [2265] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 15:04:13.268 UTC [2267] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 15:04:13.268 UTC [2267] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 15:04:13.268 UTC [2267] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 15:06:12.895 UTC [2293] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 15:06:12.895 UTC [2293] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 15:06:12.895 UTC [2293] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 15:06:13.159 UTC [2306] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 15:06:13.159 UTC [2306] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 15:06:13.159 UTC [2306] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 15:06:13.215 UTC [2307] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 15:06:13.215 UTC [2307] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 15:06:13.215 UTC [2307] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 15:06:13.301 UTC [2311] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 15:06:13.301 UTC [2311] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 15:06:13.301 UTC [2311] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 15:08:12.719 UTC [2334] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 15:08:12.719 UTC [2334] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 15:08:12.719 UTC [2334] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 15:08:12.775 UTC [2336] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 15:08:12.775 UTC [2336] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 15:08:12.775 UTC [2336] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 15:08:12.892 UTC [2344] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 15:08:12.892 UTC [2344] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 15:08:12.892 UTC [2344] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 15:08:12.897 UTC [2345] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 15:08:12.897 UTC [2345] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 15:08:12.897 UTC [2345] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 15:10:12.573 UTC [2372] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 15:10:12.573 UTC [2372] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 15:10:12.573 UTC [2372] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 15:10:12.713 UTC [2379] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 15:10:12.713 UTC [2379] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 15:10:12.713 UTC [2379] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 15:10:12.765 UTC [2381] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 15:10:12.765 UTC [2381] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 15:10:12.765 UTC [2381] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 15:10:12.786 UTC [2383] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 15:10:12.786 UTC [2383] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 15:10:12.786 UTC [2383] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 15:12:12.425 UTC [2414] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 15:12:12.425 UTC [2414] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 15:12:12.425 UTC [2414] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 15:12:12.571 UTC [2424] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 15:12:12.571 UTC [2424] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 15:12:12.571 UTC [2424] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 15:12:12.624 UTC [2427] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 15:12:12.624 UTC [2427] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 15:12:12.624 UTC [2427] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 15:12:12.673 UTC [2430] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 15:12:12.673 UTC [2430] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 15:12:12.673 UTC [2430] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-10 15:14:12.300 UTC [2451] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 15:14:12.300 UTC [2451] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-10 15:14:12.300 UTC [2451] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-10 15:14:12.432 UTC [2459] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 15:14:12.432 UTC [2459] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-10 15:14:12.432 UTC [2459] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-10 15:14:12.432 UTC [2458] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 15:14:12.432 UTC [2458] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-10 15:14:12.432 UTC [2458] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-10 15:14:12.530 UTC [2464] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-10 15:14:12.530 UTC [2464] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-10 15:14:12.530 UTC [2464] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	

@@ -5,7 +5,7 @@ services:
     container_name: db_postgres
     build: 
       context: .
-      dockerfile: ../Dockerfile
+      dockerfile: ./Dockerfile
     image: pgtitanic
     command: >
       postgres -c logging_collector=on 
@@ -23,12 +23,13 @@ services:
       PGDATA: /pgdb/data
       POSTGRES_DB: titanicdb
     volumes:
-      - pgdata:/pgdb
+      - ./pgdb:/pgdb
       - ./provision/:/docker-entrypoint-initdb.d/
     ports:
       - "5432:5432"
     networks:
-      - postgres
+      titanicnet:
+        ipv4_address: 10.10.10.10
     restart: unless-stopped
   
   pgadmin:
@@ -38,27 +39,17 @@ services:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-harvash2004@yahoo.com}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
     volumes:
-      - pgadmin:/pgadmin
+      - .pgadmin:/pgadmin
     ports:
       - "${PGADMIN_PORT:-5050}:80"
     networks:
-      - postgres
+      titanicnet:
+        ipv4_address: 10.10.10.20
     restart: unless-stopped
 
 networks:
-  postgres:
-    driver: bridge
+  titanicnet:
+    external: true
+      
 
-volumes:
-  pgdata:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: /Users/cxa791/TitanicLost/assets/pgdb
-  pgadmin:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: /Users/cxa791/TitanicLost/assets/pgadmin
+
