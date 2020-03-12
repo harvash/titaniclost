@@ -64690,3 +64690,349 @@
 	from
 	  get_psutil_disk_io_total();
 	
+2020-03-12 13:16:24.232 UTC [45444] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-12 13:16:24.232 UTC [45444] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-12 13:16:24.232 UTC [45444] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-12 13:16:24.330 UTC [45451] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-12 13:16:24.330 UTC [45451] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-12 13:16:24.330 UTC [45451] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-12 13:16:24.474 UTC [45460] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-12 13:16:24.474 UTC [45460] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-12 13:16:24.474 UTC [45460] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-12 13:16:24.484 UTC [45461] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-12 13:16:24.484 UTC [45461] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-12 13:16:24.484 UTC [45461] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-12 13:18:24.155 UTC [45493] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-12 13:18:24.155 UTC [45493] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-12 13:18:24.155 UTC [45493] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-12 13:18:24.176 UTC [45494] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-12 13:18:24.176 UTC [45494] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-12 13:18:24.176 UTC [45494] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-12 13:18:24.217 UTC [45495] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-12 13:18:24.217 UTC [45495] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-12 13:18:24.217 UTC [45495] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-12 13:18:24.267 UTC [45498] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-12 13:18:24.267 UTC [45498] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-12 13:18:24.267 UTC [45498] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-12 13:20:23.949 UTC [45525] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-12 13:20:23.949 UTC [45525] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-12 13:20:23.949 UTC [45525] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-12 13:20:24.105 UTC [45533] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-12 13:20:24.105 UTC [45533] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-12 13:20:24.105 UTC [45533] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-12 13:20:24.181 UTC [45538] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-12 13:20:24.181 UTC [45538] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-12 13:20:24.181 UTC [45538] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
+2020-03-12 13:20:24.189 UTC [45539] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-12 13:20:24.189 UTC [45539] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-12 13:20:24.189 UTC [45539] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-12 13:21:12.174 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:12.890 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:12.890 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:13.600 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:13.600 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:14.312 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:14.312 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:15.029 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:15.029 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:15.743 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:15.743 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:16.451 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:16.451 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:17.153 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:17.153 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:17.858 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:17.858 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:18.561 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:18.561 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:19.280 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:19.280 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:19.998 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:19.998 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:20.704 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:20.704 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:21.420 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:21.420 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:22.142 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:22.142 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:22.850 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:22.850 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:23.296 UTC [82] LOG:  using stale statistics instead of current ones because stats collector is not responding
+2020-03-12 13:21:23.298 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:23.298 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:23.814 UTC [45544] FATAL:  could not open file "global/pg_filenode.map": No such file or directory
+2020-03-12 13:21:23.815 UTC [45545] FATAL:  could not open file "global/pg_filenode.map": No such file or directory
+2020-03-12 13:21:23.817 UTC [45547] FATAL:  could not open file "global/pg_filenode.map": No such file or directory
+2020-03-12 13:21:23.817 UTC [45546] FATAL:  could not open file "global/pg_filenode.map": No such file or directory
+2020-03-12 13:21:23.819 UTC [45548] FATAL:  could not open file "global/pg_filenode.map": No such file or directory
+2020-03-12 13:21:23.820 UTC [45549] FATAL:  could not open file "global/pg_filenode.map": No such file or directory
+2020-03-12 13:21:23.822 UTC [45551] FATAL:  could not open file "global/pg_filenode.map": No such file or directory
+2020-03-12 13:21:23.822 UTC [45550] FATAL:  could not open file "global/pg_filenode.map": No such file or directory
+2020-03-12 13:21:23.824 UTC [45552] FATAL:  could not open file "global/pg_filenode.map": No such file or directory
+2020-03-12 13:21:24.017 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:24.017 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:24.688 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:24.688 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:25.401 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:25.401 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:26.113 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:26.113 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:26.822 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:26.822 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:27.525 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:27.525 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:28.236 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:28.236 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:28.945 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:28.945 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:29.652 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:29.652 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:30.374 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:30.374 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:31.084 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:31.084 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:31.805 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:31.805 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:32.524 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:32.524 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:33.228 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:33.228 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:33.943 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:33.943 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:34.390 UTC [82] LOG:  using stale statistics instead of current ones because stats collector is not responding
+2020-03-12 13:21:34.393 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:34.393 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:35.100 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:35.100 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:35.815 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:35.815 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:36.526 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:36.526 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:36.691 UTC [45553] FATAL:  could not open file "global/pg_filenode.map": No such file or directory
+2020-03-12 13:21:37.235 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:37.235 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:37.944 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:37.944 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:38.655 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:38.655 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:39.360 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:39.360 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:40.070 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:40.070 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:40.689 UTC [45554] FATAL:  could not open file "global/pg_filenode.map": No such file or directory
+2020-03-12 13:21:40.783 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:40.783 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:41.503 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:41.503 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:42.218 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:42.218 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:42.921 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:42.921 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:43.637 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:43.637 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:44.360 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:44.360 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:45.078 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:45.078 UTC [83] LOG:  could not open temporary statistics file "pg_stat_tmp/global.tmp": No such file or directory
+2020-03-12 13:21:45.522 UTC [82] LOG:  using stale statistics instead of current ones because stats collector is not responding
+2020-03-12 13:22:23.746 UTC [1] LOG:  could not open file "postmaster.pid": No such file or directory
+2020-03-12 13:22:23.746 UTC [1] LOG:  performing immediate shutdown because data directory lock file is invalid
+2020-03-12 13:22:23.746 UTC [1] LOG:  received immediate shutdown request
+2020-03-12 13:22:23.746 UTC [1] LOG:  could not open file "postmaster.pid": No such file or directory
+2020-03-12 13:22:23.746 UTC [45555] FATAL:  could not open file "global/pg_filenode.map": No such file or directory
+2020-03-12 13:22:23.749 UTC [82] WARNING:  terminating connection because of crash of another server process
+2020-03-12 13:22:23.749 UTC [82] DETAIL:  The postmaster has commanded this server process to roll back the current transaction and exit, because another server process exited abnormally and possibly corrupted shared memory.
+2020-03-12 13:22:23.749 UTC [82] HINT:  In a moment you should be able to reconnect to the database and repeat your command.
+2020-03-12 13:22:23.751 UTC [45556] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.753 UTC [45557] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.756 UTC [45558] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.756 UTC [45559] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.759 UTC [45560] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.759 UTC [45561] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.762 UTC [45562] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.763 UTC [45563] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.763 UTC [45564] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.765 UTC [45565] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.766 UTC [45566] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.767 UTC [45567] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.768 UTC [45568] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.770 UTC [45569] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.770 UTC [127] WARNING:  terminating connection because of crash of another server process
+2020-03-12 13:22:23.770 UTC [127] DETAIL:  The postmaster has commanded this server process to roll back the current transaction and exit, because another server process exited abnormally and possibly corrupted shared memory.
+2020-03-12 13:22:23.770 UTC [127] HINT:  In a moment you should be able to reconnect to the database and repeat your command.
+2020-03-12 13:22:23.769 UTC [122] WARNING:  terminating connection because of crash of another server process
+2020-03-12 13:22:23.769 UTC [122] DETAIL:  The postmaster has commanded this server process to roll back the current transaction and exit, because another server process exited abnormally and possibly corrupted shared memory.
+2020-03-12 13:22:23.769 UTC [122] HINT:  In a moment you should be able to reconnect to the database and repeat your command.
+2020-03-12 13:22:23.772 UTC [45571] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.772 UTC [45570] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.774 UTC [45572] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.776 UTC [45574] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.776 UTC [45573] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.779 UTC [45575] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.779 UTC [45576] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.781 UTC [45578] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.781 UTC [45577] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.783 UTC [45579] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.784 UTC [45580] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.785 UTC [45581] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.787 UTC [45582] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.787 UTC [45583] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.789 UTC [45584] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.790 UTC [45585] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.791 UTC [45586] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.793 UTC [45587] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.794 UTC [45588] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.795 UTC [45589] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.796 UTC [45590] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.797 UTC [45591] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.798 UTC [45592] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.799 UTC [45593] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.801 UTC [45595] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.802 UTC [45594] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.803 UTC [45596] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.804 UTC [45597] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.805 UTC [45598] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.806 UTC [45599] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.807 UTC [45600] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.807 UTC [45601] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.809 UTC [45603] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.810 UTC [45602] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.811 UTC [45604] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.812 UTC [45605] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.813 UTC [45606] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.814 UTC [45607] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.816 UTC [45608] FATAL:  the database system is shutting down
+2020-03-12 13:22:23.833 UTC [1] LOG:  could not write file "pg_stat/pg_stat_statements.stat.tmp": No such file or directory
+2020-03-12 13:22:23.886 UTC [1] LOG:  database system is shut down
