@@ -10,4 +10,4 @@ connect.php
 /docker/compose-postgres/pgdb/data
 /docker/compose-postgres/pgdb/logs
 /docker/compose-postgres/pgadmin
-docker/compose-postgres/pgdb/logs
+/docker/compose-postgres/pgdb/logs
