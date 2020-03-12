@@ -64634,3 +64634,59 @@
 	from
 	  get_psutil_cpu();
 	
+2020-03-12 13:14:24.367 UTC [45410] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-12 13:14:24.367 UTC [45410] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_cpu", line 4, in <module>
+	    from psutil import cpu_times_percent, cpu_percent, cpu_count
+	PL/Python function "get_psutil_cpu"
+2020-03-12 13:14:24.367 UTC [45410] STATEMENT:  
+	
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  cpu_utilization, load_1m_norm, load_1m, load_5m_norm, load_5m,
+	  "user", system, idle, iowait, irqs, other
+	from
+	  get_psutil_cpu();
+	
+2020-03-12 13:14:24.418 UTC [45413] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-12 13:14:24.418 UTC [45413] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk", line 5, in <module>
+	    from psutil import disk_usage
+	PL/Python function "get_psutil_disk"
+2020-03-12 13:14:24.418 UTC [45413] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  dir_or_tablespace as tag_dir_or_tablespace,
+	  path as tag_path,
+	  total, used, free, percent
+	from
+	  get_psutil_disk();
+	
+2020-03-12 13:14:24.501 UTC [45417] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-12 13:14:24.501 UTC [45417] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_mem", line 2, in <module>
+	    from psutil import virtual_memory, swap_memory
+	PL/Python function "get_psutil_mem"
+2020-03-12 13:14:24.501 UTC [45417] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  total, used, free, buff_cache, available, percent,
+	  swap_total, swap_used, swap_free, swap_percent
+	from
+	  get_psutil_mem();
+	
+2020-03-12 13:14:24.560 UTC [45421] ERROR:  ModuleNotFoundError: No module named 'psutil'
+2020-03-12 13:14:24.560 UTC [45421] CONTEXT:  Traceback (most recent call last):
+	  PL/Python function "get_psutil_disk_io_total", line 2, in <module>
+	    from psutil import disk_io_counters
+	PL/Python function "get_psutil_disk_io_total"
+2020-03-12 13:14:24.560 UTC [45421] STATEMENT:  
+	SELECT
+	  (extract(epoch from now()) * 1e9)::int8 as epoch_ns,
+	  read_count,
+	  write_count,
+	  read_bytes,
+	  write_bytes
+	from
+	  get_psutil_disk_io_total();
+	
