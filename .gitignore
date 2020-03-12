@@ -7,5 +7,6 @@ connect.php
 /assets/pgdb/data/
 /assets/pgdb/logs/
 /assets/pgadmin/data/
-docker/pgdb
-docker/pgadmin
+docker/compose-postgres/pgdb/data
+docker/compose-postgres/pgdb/logs
+docker/compose-postgres/pgadmin
