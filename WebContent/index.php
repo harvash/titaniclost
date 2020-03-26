@@ -28,7 +28,16 @@
 		<script src="https://cdn.anychart.com/releases/8.7.1/js/anychart-data-adapter.min.js"></script>
 		
 </head>
-
+<?php
+    function requireToVar($file){
+        ob_start();
+        require($file);
+        return ob_get_clean();
+    }
+    $byAgeGender=requireToVar('surviveAgeGenderSQL.php');
+    $byClass=requireToVar('survivalByClass.php');
+    $byDest=requireToVar('destinationChart.php');
+    ?>
 <body>
 
     <!-- Navigation -->
@@ -87,13 +96,11 @@
 		<div class="container">
 			<h1><span class="glyphicon glyphicon-equalizer"></span> Titantic Lost</h1>
 			<p>Data driven retrospective of 1300+ passengers</p>
-			<p><a class="btn btn-default" href="#">Full List</a></p>
+			<p><a class="btn btn-default" href="titanicfull.php">Full List</a></p>
 		</div>
 	</div>
 
     <!-- Content -->
-    <div class="container">
-
         <!-- Heading -->
         <div class="row">
             <div class="col-lg-12">
@@ -105,120 +112,132 @@
         <!-- /.row -->
 
         <!-- Feature Row -->
-        <div class="row">
-        <?php
-            function requireToVar($file){
-                ob_start();
-                require($file);
-                return ob_get_clean();
-            }
-            $jstring=requireToVar('surviveAgeGenderSQL.php');
-            $byclass=requireToVar('survivalByClass.php')
-            ?>
-          
+        <div class="row">    
+        	<!--  main container -->    
             <article class="col-md-4 article-intro">
-                <a href="#">
-                    <img class="img-responsive img-rounded" src="js/holder.js/700x300" alt="">                    
-                </a>
                 <h3>
-                    <a href="#">Casuality Statistics</a>
+                    Top Ten Destinations
                 </h3>
-                <p>Frightening to think that money may have caused many to, er....sink or swim?</p>
+            <div id="container1"><div id="chart1"></div></div>
+                <p>Many didn't make it to where they were going.</p>
+            <script>
+        		anychart.onDocumentReady(function () {
+        		var byclass = <?php echo $byDest ?>;
+    			 // mappings
+        	  	var dataSet = anychart.data.set(byclass);
+        	    // create a chart
+        	    var chart = anychart.bar();
+
+        	    // create a bar series and set the data
+        	    //var series = chart.bar(data);
+        	    var dest = dataSet.mapAs({x: "destination",value: "count"});
+        	    var series = chart.bar(dest);
+        	    var ticksArray = [1,10, 20, 30,40,50,60,70,80,90];
+        	    chart.yScale().ticks().set(ticksArray);
+        	    // set the chart title
+        	    chart.title("Bar Chart: Basic Sample");
+
+        	    // set the titles of the axes
+        	    chart.xAxis().title("Destination");
+        	    chart.yAxis().title("Passengers");
+
+        	    // set the container id
+        	    chart.container("chart1");
+
+        	    // initiate drawing the chart
+        	    chart.draw();
+        		});
+         	</script>
             </article>
+            
             <article class="col-md-4 article-intro">
-           <div id="container">
-           <script>
-            		anychart.onDocumentReady(function () {
-            		var byclass = <?php echo $byclass ?>;
-        			 // mappings
-        		    var dataSet = anychart.data.set(byclass);
-        		    var pclass = dataSet.mapAs({x:"pclass", value:"survivors"});
-        		    var chart = anychart.pie(pclass);
-        		    chart.innerRadius('60%');
-        		    // set chart title text settings
-        		    chart.title("Percentage of Surviors by Passenger Class");
-        		    chart.container("container");
-        		    chart.draw();
-            		});
-              </script></div>
-                <h3>
-                    <a href="#">Survival by Class</a>
-                </h3>
-                <p>
-					The upper crust will prevail against any odds!
-                </p>
-            </article>
+        	<h3>
+                    Survival by Passenger Class
+            </h3>
+        	<div id="container1"><div id="chart2"></div></div>
+        	<p>The upper crust will prevail against any odds!</p>
+            <script>
+        		anychart.onDocumentReady(function () {
+        		var byclass = <?php echo $byClass ?>;
+    			 // mappings
+        	  	var dataSet = anychart.data.set(byclass);
+        	  	var pclass = dataSet.mapAs({x:"pclass", value:"count"});
+        	  
+        	    // create a pie chart and set the data
+        	    var chart = anychart.pie(pclass);
 
-            <article class="col-md-4 article-intro">
+        	    /* set the inner radius
+        	    (to turn the pie chart into a doughnut chart)*/
+        	    chart.innerRadius("50%");
+        	    
+        	  	var palette = anychart.palettes.rangeColors();
+        	    palette.items([
+        	        {color: 'green'},
+        	        {color: 'yellow'},
+        	      {color: 'red'}
+        	    ]);
+        	    chart.palette(palette);
+        	    chart.container("chart2");
+				chart.labels().fontColor('black');
+        	    // initiate drawing the chart
+        	    chart.draw();
+        		});
+     		</script>
+        </article>
 
-            <div id="container1">
-
+        <article class="col-md-4 article-intro">
+        	<h3>
+                    Survival by Age & Gender
+            </h3>
+            <div id="container1"><div id="chart3"></div></div>                   
+            <p>
+               In early 1900's, it was still a man's world!
+            </p>
             <script>
             anychart.onDocumentReady(function () {
 
             	// data "surviveAgeGenderSQL.php")
-            	var phpdata = <?php echo $jstring ?>;
+            	var phpdata = <?php echo $byAgeGender ?>;
             	data = anychart.data.set(phpdata); 
 
-            	// remapping data
-            	var males = data.mapAs({x: "Age_Range", value: "Males"});
-                var females = data.mapAs({x: "Age_Range", value: "Females"});
+            	   // remapping data
+            	   var males = data.mapAs({x: "age_range", value: "males"});
+            	   var females = data.mapAs({x: "age_range", value: "females"});
 
-            	// create a chart
-            	var chart = anychart.cartesian();
-            	//chart.height = "400px";
-            	//chart.width = "550px";
+            	    // create a chart
+            	    var chart = anychart.column();
 
-            	// set default series type
-            	chart.defaultSeriesType("column");
+            	    // create the first series, set the data and name
+            	    var series1 = chart.column(males);
+            	    series1.name("Males: ");
+            	    series1.color("blue");
+            	    // create the second series, set the data and name
+            	    var series2 = chart.column(females);
+            	    series2.name("Females: ");
+            		series2.color("pink");
+            	    // set the padding between columns
+            	    chart.barsPadding(-0.5);
 
+            	    // set the padding between column groups
+            	    chart.barGroupsPadding(2);
+            	    
+            	    // enable legend
+            	    chart.legend(true);
+            	    
+            	    // set the titles of the axes
+            	    chart.xAxis().title("Age Ranges");
+            	    chart.yAxis().title("# Survivors");
 
-                // create variable for series
-                var series;
-                // create male series
-                series = chart.column(males);
-                // set id for the male series
-                series.id("males");
-              	series.name("males");
-              	series.color("blue");
-              
-                // create female series
-                series = chart.column(females);
-                // set id for female series
-                series.id("females");
-            	series.name("females");
-                series.color("pink");
+            	    // set the container id
+            	    chart.container("chart3");
 
-            	// enable legend
-            	chart.legend(true);
-
-            	// set axes titles
-            	var xAxis = chart.xAxis();
-            	xAxis.title("Age Range");
-            	var yAxis = chart.yAxis();
-            	yAxis.title("# of survivors");
-
-            	var stage = anychart.graphics.create("container1");
-            	chart.container(stage).draw();
-            	// draw chart
-            	//chart.container("container");
-            	//chart.draw();
+            	    // initiate drawing the chart
+            	    chart.draw();
             });
             </script>
-  			</div>
-                <h3>
-                    <a href="#">Survival by Age & Gender</a>
-                </h3>
-                
-                <p>
-                   In early 1900's, it was still a man's world!
-                </p>
-            </article>
-        </div>
+        </article>
+ 	</div>
         <!-- /.row -->
-
-    </div>
-    <!-- /.container -->
 	<!--  dropped for a later day...
 	<footer>
 		<div class="footer-blurb">
@@ -241,10 +260,9 @@
 					</div>
 
 				</div>
-				<!-- /.row -->	
+    -->
 			</div>
         </div>
-        -->
         <div class="small-print">
         	<div class="container">
         		<p><a href="#">Terms &amp; Conditions</a> | <a href="#">Privacy Policy</a> | <a href="#">Contact</a></p>

@@ -1,0 +1,19 @@
+version: '3.5'
+
+services:
+  webserver:
+    image: titanicweb
+    container_name: webserver-php
+    volumes:
+      - ./webcontent:/var/www/html
+    restart: unless-stopped   
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      titanicnet:
+        ipv4_address: 10.10.10.30
+    
+networks:
+  titanicnet:
+    external: true 
