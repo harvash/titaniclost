@@ -7,7 +7,8 @@ set -e
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
   CREATE ROLE pgwatch2 WITH LOGIN PASSWORD 'secret';
   -- NB! For very important databases it might make sense to ensure that the user
-  -- account used for monitoring can only open a limited number of connections (there are according checks in code also though)
+  -- account used for monitoring can only open a limited number of connections 
+  -- (there are according checks in code also though)
   ALTER ROLE pgwatch2 CONNECTION LIMIT 3;
   GRANT pg_monitor TO pgwatch2;  
   --
